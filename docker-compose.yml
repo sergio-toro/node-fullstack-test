@@ -1,0 +1,43 @@
+version: '2'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    command: ["./wait-for-it.sh", "amqp://rabbit", "--", "nodemon", "--debug=5858"]
+    ports:
+      - "8020:8020"
+      - "5858:5858"
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - mongo
+      - rabbit
+    links:
+      - mongo
+      - rabbit
+    environment:
+      - APP_PORT=8020
+      - MONGO_URL=mongodb://mongo:27017/test_d
+      - RABBIT_URL=amqp://rabbit
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    depends_on:
+      - backend
+    environment:
+      - APP_PORT=8050
+      - API_URL=http://localhost:8020
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+    command: "--smallfiles" #--logpath=/dev/null
+  rabbit:
+    image: rabbitmq:latest
