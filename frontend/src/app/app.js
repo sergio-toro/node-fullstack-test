@@ -1,8 +1,14 @@
 import angular from 'angular';
 
-import '../style/app.css';
+import 'normalize'
+import 'flexboxgrid'
+import 'fontawesome'
+import 'app.css'
 
-const app = () => {
+import statusTag from './components/statusTag/statusTag'
+import tag from './components/tag/tag'
+
+let app = () => {
   return {
     template: require('./app.html'),
     controller: 'AppCtrl',
@@ -12,14 +18,16 @@ const app = () => {
 
 class AppCtrl {
   constructor() {
-    this.footer = `Let's start :D`;
+    // this.footer = `Let's start :D`;
   }
 }
 
-const MODULE_NAME = 'app';
+const MODULE_NAME = 'app'
 
 angular.module(MODULE_NAME, [])
   .directive('app', app)
-  .controller('AppCtrl', AppCtrl);
+  .controller('AppCtrl', AppCtrl)
+  .component('statusTag', statusTag)
+  .component('tag', tag)
 
-export default MODULE_NAME;
+export default MODULE_NAME

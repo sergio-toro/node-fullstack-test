@@ -1,5 +1,7 @@
 'use strict';
 
+var path = require('path')
+
 // Modules
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
@@ -33,6 +35,22 @@ module.exports = function makeWebpackConfig() {
   config.entry = isTest ? void 0 : {
     app: './src/app/app.js'
   };
+
+  /**
+   * Resolve
+   * Reference: https://webpack.js.org/configuration/resolve/
+   */
+  config.resolve = {
+    modules: [
+      '.',
+      'node_modules',
+      path.resolve(__dirname, 'src')
+    ],
+    alias: {
+      normalize: path.join(__dirname, '/node_modules/normalize.css'),
+      fontawesome: path.join(__dirname, '/node_modules/font-awesome/css/font-awesome.css'),
+    }
+  }
 
   /**
    * Output
@@ -108,7 +126,7 @@ module.exports = function makeWebpackConfig() {
         loader: [
           {loader: 'css-loader', query: {sourceMap: true}},
           {loader: 'postcss-loader'}
-        ],
+        ]
       })
     }, {
       // ASSET LOADER

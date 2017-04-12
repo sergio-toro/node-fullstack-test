@@ -1,0 +1,7 @@
+.status-tag {
+  line-height: 20px;
+  i.fa {
+    font-size: 19px;
+    margin-right: .5rem;
+  }
+}

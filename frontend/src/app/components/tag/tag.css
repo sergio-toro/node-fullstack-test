@@ -1,0 +1,9 @@
+@import '../variables.css';
+
+.tag {
+  display: inline-block;
+  color: $cWhite;
+  background: $cDark;
+  padding: .5rem 1rem;
+  border-radius: 3px;
+}
