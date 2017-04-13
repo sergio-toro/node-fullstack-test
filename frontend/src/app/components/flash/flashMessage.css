@@ -1,0 +1,34 @@
+@import '../variables.css';
+
+.flash-message {
+  display: flex;
+  width: 30rem;
+  /*font-size: 1.4rem;*/
+  background: $cWhite;
+  border-radius: 3px;
+  border: 1px solid $cDark;
+  box-shadow: 2px 2px 5px 0 $cDark50;
+}
+
+.flash-message-icon,
+.flash-message-content {
+  padding: 1rem;
+}
+
+.flash-message-icon {
+  display: block;
+  border-right: 1px solid $cDark;
+  vertical-align: middle;
+  line-height: 2.2rem;
+
+  .fa {
+    font-size: 22px;
+    vertical-align: middle;
+  }
+}
+
+.flash-message-content {
+  display: block;
+  width: 100%;
+  line-height: 2.4rem;
+}

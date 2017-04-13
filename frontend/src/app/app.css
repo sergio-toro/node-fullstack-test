@@ -41,7 +41,6 @@ button {
 }
 
 /* table styles */
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -73,11 +72,20 @@ table {
   }
 }
 
+header {
+  margin-bottom: 3rem;
+}
+
 .app-container {
   max-width: 892px;
   margin: auto;
 
-  padding-top: 30px;
+  padding-top: 4rem;
 }
 
 
+/* helpers */
+
+.text-right {
+  text-align: right;
+}

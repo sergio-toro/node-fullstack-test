@@ -1,0 +1,13 @@
+
+
+.flash-container {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.flash-container-wrapper {
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+}
