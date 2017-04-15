@@ -41,11 +41,6 @@ module.exports = function makeWebpackConfig() {
    * Reference: https://webpack.js.org/configuration/resolve/
    */
   config.resolve = {
-    modules: [
-      '.',
-      'node_modules',
-      path.resolve(__dirname, 'src')
-    ],
     alias: {
       normalize: path.join(__dirname, '/node_modules/normalize.css'),
       fontawesome: path.join(__dirname, '/node_modules/font-awesome/css/font-awesome.css'),
@@ -186,7 +181,11 @@ module.exports = function makeWebpackConfig() {
           plugins: [autoprefixer]
         }
       }
-    })
+    }),
+    new webpack.DefinePlugin({
+        'process.env.SOCKET_URL': JSON.stringify(process.env.SOCKET_URL || 'ws://localhost:3500'),
+        'process.env.API_URL': JSON.stringify(process.env.API_URL || 'http://localhost:8020'),
+    }),
   ];
 
   // Skip rendering index.html in test mode

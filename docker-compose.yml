@@ -11,6 +11,7 @@ services:
       - "3500:3500"
     volumes:
       - ./backend:/backend
+      - /backend/node_modules
     depends_on:
       - mongo
       - rabbit
@@ -20,7 +21,7 @@ services:
     environment:
       - APP_PORT=8020
       - SOCKET_PORT=3500
-      - MONGO_URL=mongodb://mongo:27017/test_d
+      - MONGO_URL=mongodb://mongo:27017/test_db
       - RABBIT_URL=amqp://rabbit
   frontend:
     build:

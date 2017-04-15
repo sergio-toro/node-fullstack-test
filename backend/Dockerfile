@@ -5,8 +5,7 @@ WORKDIR /backend
 RUN npm install -g nodemon
 
 COPY backend/package.json /backend/package.json
-RUN npm install
-RUN mv /backend/node_modules /node_modules
+RUN yarn install
 
 COPY . /backend
 
