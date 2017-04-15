@@ -13,9 +13,9 @@ export default {
   `,
   controller: function() {
     var vm = this;
-    console.log(vm); // May not yet be available!
+    // console.log(vm); // May not yet be available!
     vm.$onInit = function() {
-      console.log(vm.flashMessages); // Guaranteed to be available!
+      // console.log(vm.flashMessages); // Guaranteed to be available!
     }
   },
   bindings: {

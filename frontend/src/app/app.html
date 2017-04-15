@@ -1,59 +1,24 @@
 <header>
   <div class="row">
-    <div class="col-xs">
+    <div class="col-xs-4">
       <h1>Conversions</h1>
     </div>
     <div class="col-xs text-right">
-      <button>New PDF Conversion</button>
-      <button>New HTML Conversion</button>
+      <button
+        ng-click="$ctrl.onNewConversion('pdf')"
+      >
+        New PDF Conversion
+      </button>
+      <button
+        ng-click="$ctrl.onNewConversion('html')"
+      >
+        New HTML Conversion
+      </button>
     </div>
   </div>
 </header>
 
-<main>
+<conversions></conversions>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th width="130">Created At</th>
-        <th width="90">Type</th>
-        <th width="115">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>PDF #1</td>
-        <td>Sun, Jan 1, 9:30a</td>
-        <td>
-          <tag content="'HTML'">
-        </td>
-        <td>
-          <status-tag status="'processed'" />
-        </td>
-      </tr>
-      <tr>
-        <td>PDF #1</td>
-        <td>Sun, Jan 1, 9:30a</td>
-        <td>
-          <tag content="'PDF'">
-        </td>
-        <td>
-          <status-tag status="'processing'" />
-        </td>
-      </tr>
-      <tr>
-        <td>PDF #1</td>
-        <td>Sun, Jan 1, 9:30a</td>
-        <td>
-          <tag content="'HTML'">
-        </td>
-        <td>
-          <status-tag status="'queue'" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</main>
+<flash-container flash-messages="$ctrl.flashMessages"></flash-container>
 
-<flash-container flash-messages="$ctrl.flashMessages" />

@@ -1,0 +1,22 @@
+<table class="conversions">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th width="130">Created At</th>
+      <th width="90">Type</th>
+      <th width="115">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="item in $ctrl.conversionsList">
+      <td ng-bind="item.name"></td>
+      <td>Sun, Jan 1, 9:30a</td>
+      <td>
+        <tag content="item.type.toUpperCase()">
+      </td>
+      <td>
+        <status-tag status="item.status" />
+      </td>
+    </tr>
+  </tbody>
+</table>
