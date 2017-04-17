@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th width="130">Created At</th>
+      <th width="150">Created At</th>
       <th width="90">Type</th>
       <th width="115">Status</th>
     </tr>
@@ -10,9 +10,9 @@
   <tbody>
     <tr ng-repeat="item in $ctrl.conversionsList">
       <td ng-bind="item.name"></td>
-      <td>Sun, Jan 1, 9:30a</td>
+      <td>{{item.createdAt | date:'EEE, MMM d, h:mma'}}</td>
       <td>
-        <tag content="item.type.toUpperCase()">
+        <tag content="item.type | uppercase">
       </td>
       <td>
         <status-tag status="item.status" />
