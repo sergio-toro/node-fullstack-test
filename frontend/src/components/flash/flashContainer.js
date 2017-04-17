@@ -1,22 +1,34 @@
 import './flashContainer.css'
 
+export const FLASH_EVENTS = {
+  CREATED: Symbol('flash-created'),
+}
+const REMOVE_MESSAGE_TIMEOUT = 5000
+
+
 class FlashContainerCtrl {
   constructor($scope) {
     this.$scope = $scope
   }
 
   $onInit() {
-    const ctrl = this
+    const { $scope } = this
     this.flashMessages = []
 
-    this.$scope.$on('flash-created', (event, data) => {
+    $scope.$on(FLASH_EVENTS.CREATED, (event, data) => {
       this.flashMessages.push(data)
+
       setTimeout(() => {
-        this.flashMessages = this.flashMessages.filter(item => {
-          return item._id !== data._id
+        $scope.$apply(() => {
+          this.removeFlashMessage(data._id)
         })
-        this.$scope.$apply()
-      }, 5000)
+      }, REMOVE_MESSAGE_TIMEOUT)
+    })
+  }
+
+  removeFlashMessage(id) {
+    this.flashMessages = this.flashMessages.filter(item => {
+      return item._id !== id
     })
   }
 }

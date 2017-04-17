@@ -2,6 +2,10 @@ import './conversions.css'
 
 const API_URL = process.env.API_URL
 
+export const CONVERSION_EVENTS = {
+  CREATED: Symbol('conversion-created'),
+  UPDATED: Symbol('conversion-updated'),
+}
 
 class ConversionCtrl {
   constructor($http, $scope) {
@@ -19,17 +23,15 @@ class ConversionCtrl {
       })
       .catch((error) => console.error('ERROR', error))
 
-    this.$scope.$on('conversion-created', (e, data) => {
+    this.$scope.$on(CONVERSION_EVENTS.CREATED, (e, data) => {
       this.conversionsList.push(data)
     })
 
-    this.$scope.$on('conversion-updated', (e, data) => {
+    this.$scope.$on(CONVERSION_EVENTS.UPDATED, (e, data) => {
       this.conversionsList = this.conversionsList
         .map(item => item._id === data._id ? data : item)
     })
-
   }
-
 }
 
 export default {

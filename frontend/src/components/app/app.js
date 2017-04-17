@@ -1,11 +1,12 @@
 import './app.css'
 
+import { CONVERSION_EVENTS } from '../conversions/conversions'
+
 const API_URL = process.env.API_URL
 
 class AppCtrl {
-  constructor($http, $scope, $rootScope) {
+  constructor($http, $rootScope) {
     this.$http = $http
-    this.$scope = $scope
     this.$rootScope = $rootScope
     this.flashMessages = [
       { icon: 'check', content: "PDF #2 finished" },
@@ -15,10 +16,11 @@ class AppCtrl {
   }
 
   onNewConversion(type) {
-    this.$http
-      .post(`${API_URL}/conversion`, { type })
+    const { $http, $rootScope } = this
+
+    $http.post(`${API_URL}/conversion`, { type })
       .then(({ data }) => {
-        this.$rootScope.$broadcast('conversion-created', data)
+        $rootScope.$broadcast(CONVERSION_EVENTS.CREATED, data)
       })
       .catch((error) => {
         console.log('FAIL', error)
