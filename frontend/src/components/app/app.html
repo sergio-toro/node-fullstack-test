@@ -1,0 +1,27 @@
+<div class="app">
+  <header class="app-header">
+    <div class="row">
+      <div class="col-xs-4">
+        <h1 class="app-title">Conversions</h1>
+      </div>
+      <div class="col-xs app-text-right">
+        <button
+          class="app-button"
+          ng-click="$ctrl.onNewConversion('pdf')"
+        >
+          New PDF Conversion
+        </button>
+        <button
+          class="app-button"
+          ng-click="$ctrl.onNewConversion('html')"
+        >
+          New HTML Conversion
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <conversions></conversions>
+
+  <flash-container></flash-container>
+</div>

@@ -1,0 +1,33 @@
+@import '../variables.css';
+
+/* table styles */
+table.conversions {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    th {
+      padding: 1rem ;
+      font-weight: normal;
+      border-top: 1px solid $cDark;
+      border-bottom: 1px solid $cDark;
+      text-align: left;
+
+      &:first-child {
+        border-left: 1px solid $cDark;
+      }
+      &:last-child {
+        border-right: 1px solid $cDark;
+      }
+    }
+  }
+
+  tbody {
+    tr:first-child td {
+      padding-top: calc(1rem + 1px);
+    }
+    td {
+      padding: 1rem calc(1rem + 1px);
+    }
+  }
+}

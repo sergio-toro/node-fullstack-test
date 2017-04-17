@@ -14,16 +14,22 @@ class ConversionCtrl {
     this.conversionsList = []
 
     this.$http.get(`${API_URL}/conversion-list`)
-      .then(({ data}) => {
+      .then(({ data }) => {
         this.conversionsList = data
       })
       .catch((error) => console.error('ERROR', error))
 
-    this.$scope.$on('conversion-created', (event, data) => {
+    this.$scope.$on('conversion-created', (e, data) => {
       this.conversionsList.push(data)
-      this.$scope.$apply()
     })
+
+    this.$scope.$on('conversion-updated', (e, data) => {
+      this.conversionsList = this.conversionsList
+        .map(item => item._id === data._id ? data : item)
+    })
+
   }
+
 }
 
 export default {

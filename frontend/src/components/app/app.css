@@ -1,0 +1,44 @@
+@import '../variables.css';
+
+.app {
+  max-width: 892px;
+  margin: auto;
+
+  padding-top: 4rem;
+}
+
+.app-button {
+  padding: .5rem 2rem;
+  background: $cLight;
+  border: 1px solid $cDark;
+  border-radius: 2px;
+  color: $cDark;
+  font-weight: bold;
+  opacity: 0.7;
+  font-size: 12px;
+  line-height: 16px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
+
+  + .app-button {
+    margin-left: .5rem;
+  }
+}
+
+.app-title {
+  font-weight: normal;
+  margin: 0;
+}
+
+.app-header {
+  margin-bottom: 3rem;
+}
+
+/* helpers */
+.app-text-right {
+  text-align: right;
+}
+
