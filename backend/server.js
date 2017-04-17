@@ -15,7 +15,7 @@ const SOCKET_PORT = process.env.SOCKET_PORT
 const MONGO_URL = process.env.MONGO_URL
 const RABBIT_URL = process.env.RABBIT_URL
 
-const CONVERSIONS_QUEUE = 'conv-3'
+const CONVERSIONS_QUEUE = 'conv-4'
 
 // Socket.io
 class RealTimeServer {
@@ -26,17 +26,20 @@ class RealTimeServer {
   }
 
   connect() {
-    io.on('connection', (socket) => {
-      this.socket = socket
-
-      this.socket.on('disconnect', (params) => {
-        console.log('Socket.io disconnect', params)
+    return new Promise((resolve) => {
+      io.on('connection', (socket) => {
+        resolve(socket)
       })
+      server.listen(SOCKET_PORT)
     })
-    server.listen(SOCKET_PORT)
+
   }
 
-  emit(channel, data) {
+  async emit(channel, data) {
+    if (this.socket === null) {
+      this.socket = await this.connect()
+    }
+
     this.socket.emit(channel, data)
   }
 }
@@ -68,7 +71,7 @@ const sendToQueue = async function(queue, data, priority = 0) {
     const buffer = new Buffer.from(JSON.stringify(data))
     await ch.sendToQueue(queue, buffer, { priority })
 
-    console.log('-- Sent to queue', data, {priority})
+    console.log('==> Sent to queue', data, {priority})
     // return ch.close()
   } catch(error) {
     console.warn('sendToQueue', error)
@@ -90,7 +93,10 @@ const consumeQueue = async function(queue, callback) {
 }
 
 consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
-  if (message !== null) {
+  if (message === null) {
+    return
+  }
+  try {
     const data = JSON.parse(message.content)
     const { _id } = data
 
@@ -102,8 +108,7 @@ consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
 
     item.status = 'processing'
     await item.save()
-
-    realTime.emit('conversion-updated', item)
+    await realTime.emit('conversion-updated', item)
 
     const timeout = item.type === 'html' ? 10 : 100
     console.log('===> Received message', item.name, timeout)
@@ -112,13 +117,15 @@ consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
       console.log('===> Message ACK', item.name)
       item.status = 'processed'
       await item.save()
-
-      realTime.emit('conversion-updated', item)
+      await realTime.emit('conversion-updated', item)
 
       ch.ack(message)
     }, timeout * 1000)
-
+  } catch (error) {
+    console.warn('--> Conversion worker error', error)
+    ch.nack(message)
   }
+
 })
 
 
