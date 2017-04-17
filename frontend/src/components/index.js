@@ -1,7 +1,7 @@
 import App from './app'
 import Conversions from './conversions'
 import Flash from './flash'
-import StatusTag from './statustag'
+import StatusTag from './statusTag'
 import Tag from './tag'
 
 const MODULE_NAME = 'app.components'
