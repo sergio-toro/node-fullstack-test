@@ -15,7 +15,34 @@ const SOCKET_PORT = process.env.SOCKET_PORT
 const MONGO_URL = process.env.MONGO_URL
 const RABBIT_URL = process.env.RABBIT_URL
 
-const CONVERSIONS_QUEUE = 'conversions_2'
+const CONVERSIONS_QUEUE = 'conv-3'
+
+// Socket.io
+class RealTimeServer {
+  constructor() {
+    this.socket = null
+
+    this.connect()
+  }
+
+  connect() {
+    io.on('connection', (socket) => {
+      this.socket = socket
+
+      this.socket.on('disconnect', (params) => {
+        console.log('Socket.io disconnect', params)
+      })
+    })
+    server.listen(SOCKET_PORT)
+  }
+
+  emit(channel, data) {
+    this.socket.emit(channel, data)
+  }
+}
+
+const realTime = new RealTimeServer()
+
 
 // amqp
 const getChannel = async function(queue) {
@@ -27,9 +54,7 @@ const getChannel = async function(queue) {
     const ch = await conn.createChannel()
     await ch.assertQueue(queue, {
       durable: true,
-      arguments: {
-        maxPriority: 2,
-      }
+      maxPriority: 2,
     })
     return ch
   } catch(error) {
@@ -42,7 +67,9 @@ const sendToQueue = async function(queue, data, priority = 0) {
     const ch = await getChannel(queue)
     const buffer = new Buffer.from(JSON.stringify(data))
     await ch.sendToQueue(queue, buffer, { priority })
-    return ch.close()
+
+    console.log('-- Sent to queue', data, {priority})
+    // return ch.close()
   } catch(error) {
     console.warn('sendToQueue', error)
   }
@@ -63,7 +90,6 @@ const consumeQueue = async function(queue, callback) {
 }
 
 consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
-  // console.log('===> consumeQueue', message)
   if (message !== null) {
     const data = JSON.parse(message.content)
     const { _id } = data
@@ -77,39 +103,23 @@ consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
     item.status = 'processing'
     await item.save()
 
-    const timeout = item.type === 'html' ? 5 : 10
+    realTime.emit('conversion-updated', item)
+
+    const timeout = item.type === 'html' ? 10 : 100
     console.log('===> Received message', item.name, timeout)
 
-    setTimeout(() => {
+    setTimeout(async function() {
       console.log('===> Message ACK', item.name)
       item.status = 'processed'
-      item.save()
+      await item.save()
+
+      realTime.emit('conversion-updated', item)
+
       ch.ack(message)
     }, timeout * 1000)
 
   }
 })
-
-
-
-
-// Socket.io
-io.on('connection', function(client) {
-  console.log('Hello new client', client.id)
-
-  client.on('disconnect', function(params) {
-    console.log('Socket.io disconnect', params)
-  })
-
-  // Way to
-  const data = {
-    foo: 'bar',
-    list: [ 1, 2, 3, 4, 5 ],
-  }
-  client.emit('list-state', data)
-  console.log('emit!', data)
-})
-server.listen(SOCKET_PORT)
 
 
 // DB connect
@@ -175,7 +185,7 @@ app
       await sendToQueue(
         CONVERSIONS_QUEUE,
         { _id: item._id },
-        type === 'html' ? 5 : 0
+        type === 'html' ? 2 : 0
       )
 
       res.send(item)
@@ -185,5 +195,5 @@ app
     }
   })
 
-app.listen(APP_PORT);
+app.listen(APP_PORT)
 console.log('Running on http://localhost:' + APP_PORT)
