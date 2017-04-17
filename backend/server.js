@@ -21,26 +21,19 @@ const CONVERSIONS_QUEUE = 'conv-4'
 class RealTimeServer {
   constructor() {
     this.socket = null
+    server.listen(SOCKET_PORT)
 
-    this.connect()
-  }
-
-  connect() {
-    return new Promise((resolve) => {
-      io.on('connection', (socket) => {
-        resolve(socket)
-      })
-      server.listen(SOCKET_PORT)
+    io.on('connection', (socket) => {
+      console.log('==> Socket.io client connected', socket.id)
+      // this.socket = socket
+      // resolve()
     })
-
   }
 
-  async emit(channel, data) {
-    if (this.socket === null) {
-      this.socket = await this.connect()
-    }
-
-    this.socket.emit(channel, data)
+  emit(channel, data) {
+    // const socket = await this.socket
+    console.log('==> Socket.io emit', data.name, data.status)
+    io.emit(channel, data)
   }
 }
 
@@ -108,16 +101,17 @@ consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
 
     item.status = 'processing'
     await item.save()
-    await realTime.emit('conversion-updated', item)
+    realTime.emit('conversion-updated', item)
 
-    const timeout = item.type === 'html' ? 10 : 100
+    const timeout = item.type === 'html' ? 5 : 15
+    // const timeout = item.type === 'html' ? 10 : 100
     console.log('===> Received message', item.name, timeout)
 
     setTimeout(async function() {
       console.log('===> Message ACK', item.name)
       item.status = 'processed'
       await item.save()
-      await realTime.emit('conversion-updated', item)
+      realTime.emit('conversion-updated', item)
 
       ch.ack(message)
     }, timeout * 1000)
