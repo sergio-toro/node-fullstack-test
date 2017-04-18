@@ -5,7 +5,9 @@
   "author": "Sergio Toro <sergio.toro.castano@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "standard $(find ./src ./index.js -path '*.js') --verbose | snazzy && mocha $(find ./test -path '*.test.js')",
+    "standard-fix": "standard $(find ./src ./index.js -path '*.js') --verbose --fix | snazzy"
   },
   "dependencies": {
     "amqplib": "^0.5.1",
@@ -14,5 +16,19 @@
     "method-override": "^2.3.8",
     "mongoose": "^4.9.4",
     "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.2",
+    "supertest": "^3.0.0"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "afterEach"
+    ]
   }
 }
