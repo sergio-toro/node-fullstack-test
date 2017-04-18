@@ -1,20 +1,7 @@
-import app from './app';
+import rootModule, { MODULE_NAME } from './root';
 
-describe('app', () => {
-
-  describe('AppCtrl', () => {
-    let ctrl;
-
-    beforeEach(() => {
-      angular.mock.module(app);
-
-      angular.mock.inject(($controller) => {
-        ctrl = $controller('AppCtrl', {});
-      });
-    });
-
-    it('should contain the starter url', () => {
-      expect(ctrl.url).toBe('https://github.com/preboot/angular-webpack');
-    });
-  });
-});
+describe('rootModule', () => {
+  it('exported MODULE_NAME should match module.name', () => {
+    expect(MODULE_NAME).toBe(rootModule.name)
+  })
+})

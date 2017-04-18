@@ -1,11 +1,7 @@
 import './conversions.css'
+import CONVERSION_EVENTS from './events'
 
 const API_URL = process.env.API_URL
-
-export const CONVERSION_EVENTS = {
-  CREATED: Symbol('conversion-created'),
-  UPDATED: Symbol('conversion-updated'),
-}
 
 class ConversionCtrl {
   constructor($http, $scope) {

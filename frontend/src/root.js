@@ -7,14 +7,13 @@ import 'flexboxgrid'
 import 'fontawesome'
 import './root.css'
 
-const MODULE_NAME = 'root'
+export const MODULE_NAME = 'root'
 
 export default angular
   .module(MODULE_NAME, [
     Components.name,
     Services.name,
   ])
-
   .run((realTimeConversions) => {
     realTimeConversions.listen()
   })

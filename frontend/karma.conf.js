@@ -26,7 +26,8 @@ module.exports = function karmaConfig (config) {
       // Reference: http://webpack.github.io/docs/testing.html
       // Reference: https://github.com/webpack/karma-webpack
       // Convert files with webpack and load sourcemaps
-      'src/tests.webpack.js': ['webpack', 'sourcemap']
+      'src/tests.webpack.js': ['babel', 'webpack', 'sourcemap'],
+
     },
 
     browsers: [
@@ -35,6 +36,14 @@ module.exports = function karmaConfig (config) {
     ],
 
     singleRun: true,
+
+    logLevel: config.LOG_DEBUG,
+    client: {
+      captureConsole: true,
+      mocha: {
+        bail: true
+      },
+    },
 
     // Configure code coverage reporter
     coverageReporter: {

@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 import { getIcon, getDescription } from '../../utils/conversions'
-import { CONVERSION_EVENTS } from '../../components/conversions/conversions'
-import { FLASH_EVENTS } from '../../components/flash/flashContainer'
+import { CONVERSION_EVENTS } from '../../components/conversions'
+import { FLASH_EVENTS } from '../../components/flash'
 
 const SOCKET_URL = process.env.SOCKET_URL
 

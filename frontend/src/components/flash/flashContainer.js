@@ -1,8 +1,6 @@
 import './flashContainer.css'
+import FLASH_EVENTS from './events'
 
-export const FLASH_EVENTS = {
-  CREATED: Symbol('flash-created'),
-}
 const REMOVE_MESSAGE_TIMEOUT = 5000
 
 
