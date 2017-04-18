@@ -6,10 +6,7 @@ const routes = require('./routes')
 
 
 app
-  .use(bodyParser.urlencoded({
-    extended: true
-  }))
-  .use(bodyParser.json())
+  .use(bodyParser())
   .use(methodOverride())
   .use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
