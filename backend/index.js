@@ -5,22 +5,20 @@ const worker = require('./src/worker')
 const queue = require('./src/queue')
 const socket = require('./src/socket')
 
-
-
-console.log("Connecting to MongoDB...")
+console.log('Connecting to MongoDB...')
 mongoose.Promise = global.Promise
 mongoose.connect(config.db.mongodb)
 
-console.log("Successfully connected to MongoDB. Starting socket...")
+console.log('Successfully connected to MongoDB. Starting socket...')
 socket.start(config, server.app)
 
-console.log("Successfully started socket. Starting worker...")
+console.log('Successfully started socket. Starting worker...')
 worker.start(config)
 
-console.log("Successfully started worker. Starting queue...")
+console.log('Successfully started worker. Starting queue...')
 queue.start(config)
 
-console.log("Successfully started queue. Starting web server...")
+console.log('Successfully started queue. Starting web server...')
 server.start(config)
 
-console.log("Successfully started web server. Waiting for incoming connections...")
+console.log('Successfully started web server. Waiting for incoming connections...')

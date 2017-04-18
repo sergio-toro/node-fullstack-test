@@ -1,14 +1,14 @@
 const amqp = require('amqplib')
 
 module.exports = class RabbitConnect {
-  constructor(rabbitUrl, queue, options) {
+  constructor (rabbitUrl, queue, options) {
     this.logName = 'RabbitConnect'
     this.rabbitUrl = rabbitUrl
     this.queue = queue
     this.options = options
   }
 
-  async getConnection() {
+  async getConnection () {
     const conn = await amqp.connect(this.rabbitUrl)
 
     process.once('SIGINT', conn.close.bind(conn))
@@ -16,7 +16,7 @@ module.exports = class RabbitConnect {
     return conn
   }
 
-  async getChannel() {
+  async getChannel () {
     const conn = await this.getConnection()
     const ch = await conn.createChannel()
     await ch.assertQueue(this.queue, this.options)
@@ -26,11 +26,11 @@ module.exports = class RabbitConnect {
     return ch
   }
 
-  log(message, data) {
+  log (message, data) {
     console.warn(`== ${this.logName} ==> ${message}`, data)
   }
 
-  warn(message, data) {
+  warn (message, data) {
     console.warn(`== ${this.logName} ==> ${message}`, data)
   }
 }

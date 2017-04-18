@@ -3,14 +3,13 @@ const Conversion = require('../models/Conversion')
 const RabbitConnect = require('./RabbitConnect')
 
 module.exports = class ConversionWorker extends RabbitConnect {
-
-  constructor(rabbitUrl, queue, options) {
+  constructor (rabbitUrl, queue, options) {
     super(rabbitUrl, queue, options)
 
     this.logName = 'ConversionWorker'
   }
 
-  async listen() {
+  async listen () {
     try {
       const ch = await this.getChannel()
 
@@ -18,7 +17,7 @@ module.exports = class ConversionWorker extends RabbitConnect {
       await ch.prefetch(1)
 
       const self = this
-      ch.consume(this.queue, async function(message) {
+      ch.consume(this.queue, async function (message) {
         if (message === null) { return }
 
         try {
@@ -35,7 +34,7 @@ module.exports = class ConversionWorker extends RabbitConnect {
     }
   }
 
-  async doWork(data) {
+  async doWork (data) {
     const { _id } = data
     const item = await Conversion.findOne({ _id })
 
@@ -51,7 +50,7 @@ module.exports = class ConversionWorker extends RabbitConnect {
     // simulates heavy duty work
     return new Promise((resolve, reject) => {
       const self = this
-      setTimeout(async function() {
+      setTimeout(async function () {
         try {
           self.log('Processed item', item.name)
           item.status = 'processed'

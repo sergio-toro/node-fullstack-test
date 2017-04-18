@@ -1,13 +1,13 @@
 const ConversionQueue = require('./lib/ConversionQueue')
 let queue
 
-function start(config) {
+function start (config) {
   const { url, queueName, options } = config.rabbit
   queue = new ConversionQueue(url, queueName, options)
   console.log('Conversion queue started')
 }
 
-function send(item) {
+function send (item) {
   if (queue) {
     queue.send(item)
   } else {

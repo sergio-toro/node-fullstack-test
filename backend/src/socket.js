@@ -3,7 +3,7 @@ const socketIo = require('socket.io')
 
 let io
 
-function start(config, app) {
+function start (config, app) {
   const server = http.createServer(app)
   io = socketIo(server)
 
@@ -15,7 +15,7 @@ function start(config, app) {
   console.log('Socket.io started on port', config.io.port)
 }
 
-function emit(channel, data) {
+function emit (channel, data) {
   if (io) {
     io.emit(channel, data)
     console.log('==> Socket.io emit', data.name, data.status)

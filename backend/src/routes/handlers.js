@@ -10,7 +10,7 @@ exports.default = (req, res) => {
   )
 }
 
-exports.listConversions = async function(req, res) {
+exports.listConversions = async function (req, res) {
   try {
     const list = await Conversion.find().exec()
     res.send(list)
@@ -20,7 +20,7 @@ exports.listConversions = async function(req, res) {
   }
 }
 
-exports.clearConversions = async function(req, res) {
+exports.clearConversions = async function (req, res) {
   try {
     await Conversion.remove({})
     res.send('Conversions cleared')
@@ -29,7 +29,7 @@ exports.clearConversions = async function(req, res) {
   }
 }
 
-exports.createConversion = async function(req, res) {
+exports.createConversion = async function (req, res) {
   try {
     const { type } = req.body
     const count = await Conversion.count({ type })
@@ -37,7 +37,7 @@ exports.createConversion = async function(req, res) {
     const item = new Conversion({
       name: `${type.toUpperCase()} #${count + 1}`,
       type: type,
-      status: 'queued',
+      status: 'queued'
     })
     await item.save()
     queue.send(item)
