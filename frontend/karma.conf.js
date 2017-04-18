@@ -37,13 +37,13 @@ module.exports = function karmaConfig (config) {
 
     singleRun: true,
 
-    logLevel: config.LOG_DEBUG,
-    client: {
-      captureConsole: true,
-      mocha: {
-        bail: true
-      },
-    },
+    // logLevel: config.LOG_DEBUG,
+    // client: {
+    //   captureConsole: true,
+    //   mocha: {
+    //     bail: true
+    //   },
+    // },
 
     // Configure code coverage reporter
     coverageReporter: {
