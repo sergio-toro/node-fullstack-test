@@ -1,7 +1,8 @@
-const MODULE_NAME = 'app.services'
+export const MODULE_NAME = 'app.services'
 
-import RealTimeConversions from './realTime/RealTimeConversions'
+import realTime from './realTime'
 
 export default angular
-  .module(MODULE_NAME, [])
-  .service('realTimeConversions', RealTimeConversions)
+  .module(MODULE_NAME, [
+    realTime.name,
+  ])
