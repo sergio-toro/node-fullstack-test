@@ -5,7 +5,7 @@
   "author": "Sergio Toro <sergio.toro.castano@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "amqplib": "^0.5.1",

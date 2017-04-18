@@ -1,13 +1,13 @@
+const socket = require('../socket')
+const Conversion = require('../models/Conversion')
 const RabbitConnect = require('./RabbitConnect')
 
 module.exports = class ConversionWorker extends RabbitConnect {
 
-  constructor(rabbitUrl, queue, options, Conversion, realTime) {
+  constructor(rabbitUrl, queue, options) {
     super(rabbitUrl, queue, options)
 
     this.logName = 'ConversionWorker'
-    this.Conversion = Conversion
-    this.realTime = realTime
   }
 
   async listen() {
@@ -37,13 +37,13 @@ module.exports = class ConversionWorker extends RabbitConnect {
 
   async doWork(data) {
     const { _id } = data
-    const item = await this.Conversion.findOne({ _id })
+    const item = await Conversion.findOne({ _id })
 
     item.status = 'processing'
     await item.save()
 
     this.log('Processing item', item.name)
-    this.realTime.conversionUpdated(item)
+    socket.emit('conversion-updated', item)
 
     const timeout = item.type === 'html' ? 5 : 15
     // const timeout = item.type === 'html' ? 10 : 100
@@ -56,7 +56,7 @@ module.exports = class ConversionWorker extends RabbitConnect {
           self.log('Processed item', item.name)
           item.status = 'processed'
           await item.save()
-          self.realTime.conversionUpdated(item)
+          socket.emit('conversion-updated', item)
 
           resolve()
         } catch (error) {
