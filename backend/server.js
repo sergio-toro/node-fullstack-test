@@ -1,140 +1,44 @@
-'use strict';
-
 const app = require('express')()
-const mongoose = require('mongoose')
-const amqp = require('amqplib')
+
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 
+// Set up mongo connection
+const mongoose = require('mongoose')
+mongoose.Promise = global.Promise
+mongoose.connect(process.env.MONGO_URL)
+const Conversion = require('./src/models/Conversion')
+
+// Set up realTime communication
+const RealTimeServer = require('./src/services/RealTimeServer')
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+const realTime = new RealTimeServer(io)
+server.listen(process.env.SOCKET_PORT)
 
 // Constants
 const APP_PORT = process.env.APP_PORT
-const SOCKET_PORT = process.env.SOCKET_PORT
-const MONGO_URL = process.env.MONGO_URL
 const RABBIT_URL = process.env.RABBIT_URL
 
+const amqp = require('amqplib')
 const CONVERSIONS_QUEUE = 'conv-4'
-
-// Socket.io
-class RealTimeServer {
-  constructor() {
-    this.socket = null
-    server.listen(SOCKET_PORT)
-
-    io.on('connection', (socket) => {
-      console.log('==> Socket.io client connected', socket.id)
-      // this.socket = socket
-      // resolve()
-    })
-  }
-
-  emit(channel, data) {
-    // const socket = await this.socket
-    console.log('==> Socket.io emit', data.name, data.status)
-    io.emit(channel, data)
-  }
+const QUEUE_OPTIONS = {
+  durable: true,
+  maxPriority: 2,
 }
 
-const realTime = new RealTimeServer()
+const ConversionWorker = require('./src/services/ConversionWorker')
+const worker = new ConversionWorker(
+  RABBIT_URL,
+  CONVERSIONS_QUEUE,
+  QUEUE_OPTIONS,
+  Conversion,
+  realTime
+)
+worker.listen()
 
-
-// amqp
-const getChannel = async function(queue) {
-  try {
-    const conn = await amqp.connect(RABBIT_URL)
-
-    process.once('SIGINT', conn.close.bind(conn))
-
-    const ch = await conn.createChannel()
-    await ch.assertQueue(queue, {
-      durable: true,
-      maxPriority: 2,
-    })
-    return ch
-  } catch(error) {
-    console.warn('getChannel', error)
-  }
-}
-
-const sendToQueue = async function(queue, data, priority = 0) {
-  try {
-    const ch = await getChannel(queue)
-    const buffer = new Buffer.from(JSON.stringify(data))
-    await ch.sendToQueue(queue, buffer, { priority })
-
-    console.log('==> Sent to queue', data, {priority})
-    // return ch.close()
-  } catch(error) {
-    console.warn('sendToQueue', error)
-  }
-}
-
-const consumeQueue = async function(queue, callback) {
-  try {
-    const ch = await getChannel(queue)
-    await ch.prefetch(1)
-    // await ch.basicQos(1)
-    ch.consume(queue, (message) => {
-      callback(ch, message)
-    })
-    console.log('[*] Waiting for messages. To exit press CTRL+C')
-  } catch(error) {
-    console.warn('consumeQueue', error)
-  }
-}
-
-consumeQueue(CONVERSIONS_QUEUE, async function(ch, message) {
-  if (message === null) {
-    return
-  }
-  try {
-    const data = JSON.parse(message.content)
-    const { _id } = data
-
-    if (!_id) {
-      console.warn('===> Message discarded', data)
-      return ch.nack(message, false, false)
-    }
-    const item = await Conversion.findOne({ _id })
-
-    item.status = 'processing'
-    await item.save()
-    realTime.emit('conversion-updated', item)
-
-    const timeout = item.type === 'html' ? 5 : 15
-    // const timeout = item.type === 'html' ? 10 : 100
-    console.log('===> Received message', item.name, timeout)
-
-    setTimeout(async function() {
-      console.log('===> Message ACK', item.name)
-      item.status = 'processed'
-      await item.save()
-      realTime.emit('conversion-updated', item)
-
-      ch.ack(message)
-    }, timeout * 1000)
-  } catch (error) {
-    console.warn('--> Conversion worker error', error)
-    ch.nack(message)
-  }
-
-})
-
-
-// DB connect
-mongoose.Promise = global.Promise
-mongoose.connect(MONGO_URL)
-const Conversion = mongoose.model('Conversion', {
-  name: String,
-  type: { type: String, enum: ['pdf', 'html',] },
-  createdAt: { type: Date, default: Date.now },
-  status: {
-    type: String,
-    enum: ['processed', 'processing', 'queued',]
-  }
-})
+const ConversionQueue = require('./src/services/ConversionQueue')
+const queue = new ConversionQueue(RABBIT_URL, CONVERSIONS_QUEUE, QUEUE_OPTIONS)
 
 // App
 app
@@ -150,7 +54,12 @@ app
     next()
   })
   .get('/', (req, res) => {
-    res.send('Hello world 2!!\n')
+    res.send(
+      `Available methods:<br />` +
+      `-GET /conversion-list: list all conversions<br />` +
+      `-GET /clear: deletes all conversions stored<br />` +
+      `-POST /conversion: creates a new convertion. Params: { type: oneOf(['html', 'pdf']) }<br />`
+    )
   })
   .get('/conversion-list', async function(req, res) {
     try {
@@ -183,12 +92,7 @@ app
         status: 'queued',
       })
       await item.save()
-      await sendToQueue(
-        CONVERSIONS_QUEUE,
-        { _id: item._id },
-        type === 'html' ? 2 : 0
-      )
-
+      queue.send(item)
       res.send(item)
     } catch (error) {
       console.error('ERROR', error)
