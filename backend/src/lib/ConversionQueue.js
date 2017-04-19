@@ -21,4 +21,15 @@ module.exports = class ConversionQueue extends RabbitConnect {
       this.warn('queue error', error)
     }
   }
+
+  async purge () {
+    try {
+      const ch = await this.getChannel()
+      const result = await ch.purgeQueue(this.queue)
+      this.log('purge queue', result)
+      return ch.close()
+    } catch (error) {
+      this.warn('purge error', error)
+    }
+  }
 }

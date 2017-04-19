@@ -9,6 +9,16 @@ module.exports = class ConversionWorker extends RabbitConnect {
     this.logName = 'ConversionWorker'
   }
 
+  async clear () {
+    try {
+      const ch = await this.getChannel()
+
+      await ch.nackAll(false)
+    } catch (error) {
+      this.warn('Error clearing all', error)
+    }
+  }
+
   async listen () {
     try {
       const ch = await this.getChannel()
@@ -37,25 +47,26 @@ module.exports = class ConversionWorker extends RabbitConnect {
   async doWork (data) {
     const { _id } = data
     const item = await Conversion.findOne({ _id })
-
     item.status = 'processing'
     await item.save()
 
     this.log('Processing item', item.name)
     socket.emit('conversion-updated', item)
 
-    const timeout = item.type === 'html' ? 5 : 15
-    // const timeout = item.type === 'html' ? 10 : 100
+    // const timeout = item.type === 'html' ? 5 : 15
+    const timeout = item.type === 'html' ? 10 : 100
 
     // simulates heavy duty work
     return new Promise((resolve, reject) => {
       const self = this
       setTimeout(async function () {
         try {
-          self.log('Processed item', item.name)
+          const item = await Conversion.findOne({ _id })
           item.status = 'processed'
           await item.save()
+
           socket.emit('conversion-updated', item)
+          self.log('Processed item', item.name)
 
           resolve()
         } catch (error) {

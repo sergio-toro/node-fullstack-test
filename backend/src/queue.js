@@ -15,5 +15,14 @@ function send (item) {
   }
 }
 
+function purge (item) {
+  if (queue) {
+    return queue.purge()
+  } else {
+    console.log('queue must be started before being used')
+  }
+}
+
 exports.start = start
 exports.send = send
+exports.purge = purge

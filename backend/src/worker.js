@@ -8,4 +8,13 @@ function start (config) {
   console.log('Conversion worker started')
 }
 
+function clear () {
+  if (worker) {
+    return worker.clear()
+  } else {
+    console.log('worker must be started before being used')
+  }
+}
+
 exports.start = start
+exports.clear = clear
