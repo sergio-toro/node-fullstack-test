@@ -2,7 +2,7 @@
 
 Getting up and running with docker:
 -----------------------------------
-To use docker in the development process you need to have docker and docker-compose installed. You can find a guide to install docker and docker-compose `here <https://docs.docker.com/compose/install/>`_.
+To use docker in the development process you need to have docker and docker-compose installed. You can find a guide to install docker and docker-compose [here](https://docs.docker.com/compose/install/).
 
 Once you have installed docker and docker-compose you are available to use this commands
 
